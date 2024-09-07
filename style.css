@@ -263,13 +263,13 @@ button {
 }
 
 #game-field {
-    width: 280px;
-    height: 280px;
-    padding: 12px; /* Отступы по краям внутри игрового поля */
+    width: 16rem;
+    height: 16rem;
+    padding: 0.686rem; /* Отступы по краям внутри игрового поля */
     display: grid;
     grid-template-columns: repeat(5, 1fr); /* 5 колонок одинаковой ширины */
     grid-template-rows: repeat(5, 1fr);    /* 5 строк одинаковой высоты */
-    gap: 6.4px; /* Расстояние между клетками */
+    gap: 0.366rem; /* Расстояние между клетками */
     background-image: url('images/field.png');
     background-size: cover;
     box-sizing: border-box; /* Включаем padding в общие размеры блока */
@@ -277,8 +277,8 @@ button {
 
 /* Стили для ячеек */
 .cell {
-    width: 46.46px;
-    height: 46.46px;
+    width: 2.655rem;
+    height: 2.655rem;
     background-size: cover;
 }
 

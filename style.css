@@ -1,0 +1,301 @@
+@font-face {
+    font-family: 'Halvar Breitschrift';
+    src: url('fonts/halvar_breitschrift.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html, body {
+    touch-action: none; /* Отключаем стандартные жесты, такие как зум */
+    user-select: none;  /* Отключаем выделение текста */
+    -webkit-user-select: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Отключаем прокрутку */
+    position: fixed;
+}
+
+body {
+    -webkit-text-size-adjust: 100%;
+    background-color: #090F1E;
+    color: #FFFFFF;
+    font-family: 'Halvar Breitschrift', sans-serif;
+    font-size: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    margin-top: 2.5rem;
+    flex-direction: column;
+    align-items: center; /* Центрируем все элементы по горизонтали */
+}
+
+#status {
+    margin-bottom: -0.2rem; /* Добавляем отступ снизу, чтобы текст не перекрывал контейнер */
+    width: 420px; /* Устанавливаем фиксированную ширину */
+    height: 60px; /* Устанавливаем фиксированную высоту */
+    display: flex; /* Центрируем текст по горизонтали и вертикали */
+    align-items: center; /* Центрируем текст по вертикали */
+    justify-content: center; /* Центрируем текст по горизонтали */
+    font-size: 44px; /* Устанавливаем размер шрифта */
+    font-weight: bold; /* Устанавливаем жирность шрифта */
+    z-index: -2;
+}
+
+#signal-accuracy {
+    color: #9D9FA5;
+    font-size: 14px;
+    margin-bottom: 2rem;
+    font-family: "Microsoft Sans Serif", Arial, sans-serif;
+    z-index: 0;
+}
+
+#gradient-background {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70rem; /* ширина в rem */
+    height: 50rem; /* высота в rem */
+    background: radial-gradient(ellipse at center, rgba(21, 27, 46, 1) 20%, rgba(21, 27, 46, 0) 50%);
+    z-index: -2; /* На заднем плане, ниже остальных элементов */
+}
+
+button {
+    padding: 1.3rem;
+    background-color: #063aee;
+    border: none;
+    border-radius: 30px;
+    color: #FFF;
+    font-size: 16px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2.2rem;
+    box-shadow: 0 0px 6px #557aff66;
+    overflow: visible; /* Изменяем на visible, чтобы тень не обрезалась */
+    margin-bottom: 0rem; /* Добавляем отступ снизу, чтобы дать место тени */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: "Microsoft Sans Serif", Arial, sans-serif;
+    z-index: 0;
+}
+
+button:disabled {
+    background-color: grey;
+    cursor: not-allowed;
+    box-shadow: 0 0px 6px grey;
+    z-index: 0;
+}
+
+.pulse-once {
+    animation: pulse 0.6s ease-out;
+}
+
+/* Добавляем стили для переключения языков */
+.language-selector {
+    position: absolute;
+    grid-template-columns: 1;
+    grid-template-rows: 1;
+    grid-gap: 10px;
+    padding: 10px;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+}
+
+.full-width-line {
+    width: 100%;
+    height: 1px;
+    background-color: #3c435b;
+    opacity: 50%;
+    position: absolute;
+    top: 77px; /* Линия на высоте 77 пикселов от верхнего края */
+    left: 0;
+    z-index: 2; /* Убедимся, что линия будет выше других элементов */
+}
+
+/* Размер иконки языка */
+:root {
+    --language-icon-width: 2.4rem; /* Размер иконки увеличен на 10% */
+    --language-icon-height: 1.65rem; /* Размер иконки увеличен на 10% */
+}
+
+/* Стиль для кнопки текущего языка */
+#language-icon {
+    width: var(--language-icon-width);
+    height: var(--language-icon-height);
+    cursor: pointer;
+    outline: none; /* Убираем обводку при фокусе */
+    user-select: none; /* Отключаем выделение текста/элемента */
+    -webkit-tap-highlight-color: transparent; /* Убираем выделение цветом на мобильных устройствах */
+    border-radius: 0.5rem; /* Закругляем края увеличено на 10% */
+    background-color: #1f2639; /* Цвет фона */
+    border: 1px solid #34405e; /* Цвет рамки */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem; /* Добавляем внутренние отступы увеличены на 10% */
+    z-index: 4;
+}
+
+/* Стили для выпадающего списка языков */
+#language-dropdown {
+    position: absolute;
+    top: 10px; /* Отступ сверху увеличен на 10% */
+    right: 10px; /* Отступ справа увеличен на 10% */
+    display: none; /* Скрываем по умолчанию */
+    grid-template-columns: repeat(2, calc(var(--language-icon-width) + 0.6rem)); /* Две колонки с увеличенной областью */
+    grid-template-rows: repeat(3, calc(var(--language-icon-height) + 0.6rem)); /* Три строки с увеличенной областью */
+    grid-gap: 0.1rem; /* Зазор между элементами увеличен на 10% */
+    background-color: #1f2639;
+    border: 1px solid #34405e; /* Цвет рамки */
+    border-radius: 0.5rem; /* Закругляем углы */
+    padding: 0rem; /* Внутренние отступы */
+    z-index: 4;
+}
+
+/* Стили для иконок языков в выпадающем списке */
+#language-dropdown img {
+    width: var(--language-icon-width); /* Сохраняем размер иконки увеличенным */
+    height: var(--language-icon-height); /* Сохраняем размер иконки увеличенным */
+    padding: 0.3rem; /* Добавляем внутренние отступы для увеличения кликабельной области увеличены на 10% */
+    cursor: pointer;
+    outline: none; /* Убираем обводку при фокусе */
+    z-index: 4;
+}
+
+.logo-container {
+    position: absolute;
+    top: 22px;
+    left: 20px;
+    z-index: 2;
+}
+
+.logo-wrapper {
+    width: 70px; /* Ширина области */
+    height: 32px; /* Высота области */
+    cursor: pointer; /* Указатель мыши при наведении */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Логотип будет скрыт, если он выходит за границы */
+    z-index: 2;
+}
+
+#logo-1win {
+    width: 70px; /* Ширина логотипа */
+    height: 32px;
+    display: block;
+}
+
+.menu-bar {
+    width: 100%;
+    height: 78px;
+    position: absolute;
+    top: 0;
+    background-color: #090F1E;
+    z-index: 1;
+}
+
+#progress-bar-container {
+    width: 40%;
+    height: 5px;
+    background-color: #ddd;
+    margin-top: 1rem;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#progress-bar {
+    width: 0;
+    height: 100%;
+    background-color: #063aee;
+    transition: width 100%;
+}
+
+#countdown {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #9D9FA5;
+    opacity: 80%;
+    font-family: "Microsoft Sans Serif", Arial, sans-serif;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #090F1E;
+    color: #FFF;
+    font-family: 'Halvar Breitschrift', sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+#status {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+button {
+    padding: 1rem;
+    font-size: 18px;
+    margin-bottom: 1rem;
+    background-color: #063aee;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+#countdown {
+    font-size: 14px;
+    color: #9D9FA5;
+    margin-bottom: 1rem;
+}
+
+#game-field {
+    width: 700px;
+    height: 700px;
+    padding: 30px; /* Отступы по краям внутри игрового поля */
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 колонок одинаковой ширины */
+    grid-template-rows: repeat(5, 1fr);    /* 5 строк одинаковой высоты */
+    gap: 16px; /* Расстояние между клетками */
+    background-image: url('images/field.png');
+    background-size: cover;
+    box-sizing: border-box; /* Включаем padding в общие размеры блока */
+}
+
+/* Стили для ячеек */
+.cell {
+    width: 116.15px;
+    height: 116.15px;
+    background-size: cover;
+}
+
+.cell-odd {
+    background-image: url('images/cell_1.png');
+}
+
+.cell-even {
+    background-image: url('images/cell_2.png');
+}
+
+.star {
+    background-image: url('images/star.png');
+}

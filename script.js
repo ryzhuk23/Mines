@@ -8,20 +8,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('progress-bar');
     const accuracyElement = document.getElementById('signal-accuracy');
     const gameField = document.getElementById('game-field');
+    const leftArrowButton = document.getElementById('left-arrow');
+    const rightArrowButton = document.getElementById('right-arrow');
+
     let currentLanguage = 'en';
     let isDropdownVisible = false;
     let isCooldownActive = false;
     let accuracy = '92';
     let activeStars = [];
     let cooldownEndTime = null;
+    let currentTrapIndex = 1; // Начальный индекс для "3 TRAPS"
+
+    const trapLevels = ["1 TRAP", "3 TRAPS", "5 TRAPS", "7 TRAPS"]; // Уровни ловушек
 
     const translations = {
-        ru: { status: 'VORTEX', flip: 'Получить Сигнал', countdown: 'Осталось:', wait: 'ЖДИТЕ...', accuracy: 'Точность Сигнала:', stars: 'ЗВЁЗД' },
+        ru: { status: '3 ЛОВУШКИ', flip: 'Получить Сигнал', countdown: 'Осталось:', wait: 'ЖДИТЕ...', accuracy: 'Точность Сигнала:', stars: 'ЗВЁЗД' },
         en: { status: '3 TRAPS', flip: 'Get Signal', countdown: 'Remaining:', wait: 'HACKING...', accuracy: 'Signal Accuracy:', stars: 'STARS' },
-        hi: { status: 'VORTEX', flip: 'सिग्नल प्राप्त करें', countdown: 'सेकंड बचा:', wait: 'रुको...', accuracy: 'सटीकता:', stars: 'सितारे' },
-        pt: { status: 'VORTEX', flip: 'Receber Sinal', countdown: 'Restante:', wait: 'AGUARDE...', accuracy: 'Precisão:', stars: 'ESTRELAS' },
-        es: { status: 'VORTEX', flip: 'Recibir Señal', countdown: 'Restantes:', wait: 'ESPERE...', accuracy: 'Precisión:', stars: 'ESTRELLAS' },
-        tr: { status: 'VORTEX', flip: 'Sinyal Al', countdown: 'Kaldı:', wait: 'BEKLEYIN...', accuracy: 'Doğruluk:', stars: 'YILDIZ' }
+        hi: { status: '3 TRAPS', flip: 'सिग्नल प्राप्त करें', countdown: 'सेकंड बचा:', wait: 'रुको...', accuracy: 'सटीकता:', stars: 'सितारे' },
+        pt: { status: '3 TRAPS', flip: 'Receber Sinal', countdown: 'Restante:', wait: 'AGUARDE...', accuracy: 'Precisão:', stars: 'ESTRELAS' },
+        es: { status: '3 TRAPS', flip: 'Recibir Señal', countdown: 'Restantes:', wait: 'ESPERE...', accuracy: 'Precisión:', stars: 'ESTRELLAS' },
+        tr: { status: '3 TRAPS', flip: 'Sinyal Al', countdown: 'Kaldı:', wait: 'BEKLEYIN...', accuracy: 'Doğruluk:', stars: 'YILDIZ' }
     };
 
     function updateLanguage(lang) {
@@ -35,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (activeStars.length > 0) {
                 statusElement.innerText = `${activeStars.length} ${translation.stars}`;
             } else {
-                statusElement.innerText = translation.status;
+                statusElement.innerText = trapLevels[currentTrapIndex];
             }
         } else {
             console.error(`No translation found for language: ${lang}`);
@@ -119,54 +125,41 @@ document.addEventListener('DOMContentLoaded', () => {
         countdownInterval();
     }
 
-    // Функция для сброса звёзд с анимацией
     function resetStarsWithAnimation() {
         const fadeOutDuration = 500;
         const fadeInDuration = 500;
 
-        // Анимация исчезновения звёзд
         activeStars.forEach(cell => {
-
-            cell.classList.add('star-fade-out'); // Добавляем анимацию исчезновения
-
-            // После завершения анимации исчезновения (500 мс)
+            cell.classList.add('star-fade-out');
             setTimeout(() => {
                 cell.classList.remove('star');
                 cell.classList.remove('star-fade-out');
-                cell.classList.add('fade-in'); // Анимация появления ячейки
-
-                // Сбрасываем анимационные классы после появления ячейки
+                cell.classList.add('fade-in');
                 setTimeout(() => {
                     cell.classList.remove('fade-in', 'fade-out');
                 }, fadeInDuration);
-
             }, fadeOutDuration);
         });
         activeStars = [];
     }
 
-    // Анимация клеток
     function animateCell(cell, callback) {
         cell.classList.remove('fade-in', 'fade-out');
-        cell.classList.add('fade-out'); // Анимация исчезновения
-
-        // После исчезновения
+        cell.classList.add('fade-out');
         setTimeout(() => {
             cell.classList.remove('fade-out');
             callback();
-            cell.classList.add('fade-in'); // Анимация появления
+            cell.classList.add('fade-in');
         }, 500);
     }
 
-    // Появление новых клеток
     function revealCells() {
-        const cellsToReveal = Math.floor(Math.random() * 3) + 5;
-        const randomCells = cells.sort(() => 0.5 - Math.random()).slice(0, cellsToReveal);
+        const starsToReveal = getRandomStarsForTrapLevel();
+        const randomCells = cells.sort(() => 0.5 - Math.random()).slice(0, starsToReveal);
 
-        statusElement.innerText = `${cellsToReveal} ${translations[currentLanguage].stars}`;
+        statusElement.innerText = `${starsToReveal} ${translations[currentLanguage].stars}`;
 
         let revealDelay = 0;
-
         randomCells.forEach((cell, index) => {
             setTimeout(() => {
                 animateCell(cell, () => {
@@ -181,6 +174,25 @@ document.addEventListener('DOMContentLoaded', () => {
         startCountdown(9);
     }
 
+    function getRandomStarsForTrapLevel() {
+        let starsCount = 0;
+        switch (trapLevels[currentTrapIndex]) {
+            case "1 TRAP":
+                starsCount = Math.floor(Math.random() * 3) + 5; // от 5 до 7 звёзд
+                break;
+            case "3 TRAPS":
+                starsCount = Math.floor(Math.random() * 3) + 4; // от 4 до 6 звёзд
+                break;
+            case "5 TRAPS":
+                starsCount = Math.floor(Math.random() * 3) + 3; // от 3 до 5 звёзд
+                break;
+            case "7 TRAPS":
+                starsCount = Math.floor(Math.random() * 3) + 2; // от 2 до 4 звёзд
+                break;
+        }
+        return starsCount;
+    }
+
     flipButton.addEventListener('click', () => {
         if (isCooldownActive) return;
 
@@ -188,26 +200,39 @@ document.addEventListener('DOMContentLoaded', () => {
         isCooldownActive = true;
         statusElement.innerText = translations[currentLanguage].wait;
 
-        // Сброс звёзд с анимацией
         resetStarsWithAnimation();
 
         setTimeout(() => {
             revealCells();
             accuracy = Math.floor(Math.random() * 21) + 80;
             accuracyElement.innerText = `${translations[currentLanguage].accuracy} ${accuracy}%`;
-        }, 2000);
+
+            // Обновляем статус на текущее количество ловушек
+            statusElement.innerText = trapLevels[currentTrapIndex];
+
+            // Разблокируем кнопку "Get Signal" после завершения
+            flipButton.disabled = false;
+            isCooldownActive = false;
+        }, 1500);
+    });
+
+    leftArrowButton.addEventListener('click', () => {
+        if (!isCooldownActive) {
+            if (currentTrapIndex > 0) {
+                currentTrapIndex--;
+                updateLanguage(currentLanguage);
+            }
+        }
+    });
+
+    rightArrowButton.addEventListener('click', () => {
+        if (!isCooldownActive) {
+            if (currentTrapIndex < trapLevels.length - 1) {
+                currentTrapIndex++;
+                updateLanguage(currentLanguage);
+            }
+        }
     });
 
     updateLanguage(currentLanguage);
-
-});
-
-document.getElementById('left-arrow').addEventListener('click', () => {
-    // Действие при нажатии на левую стрелку
-    console.log('Left arrow clicked');
-});
-
-document.getElementById('right-arrow').addEventListener('click', () => {
-    // Действие при нажатии на правую стрелку
-    console.log('Right arrow clicked');
 });

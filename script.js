@@ -11,39 +11,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLanguage = 'en';
     let isDropdownVisible = false;
     let isCooldownActive = false;
-    let accuracy = '+86';
+    let accuracy = '92';
     let activeStars = [];
     let cooldownEndTime = null;
 
-    // Переводы для разных языков
     const translations = {
-        ru: { status: 'VORTEX', flip: 'Получить Сигнал', countdown: 'Осталось:', wait: 'ЖДИТЕ...', accuracy: 'Точность Сигнала:' },
-        en: { status: 'VORTEX', flip: 'Get Signal', countdown: 'Remaining:', wait: 'WAIT...', accuracy: 'Signal Accuracy:' },
-        hi: { status: 'VORTEX', flip: 'सिग्नल प्राप्त करें', countdown: 'सेकंड बचा:', wait: 'रुको...', accuracy: 'सटीकता:' },
-        pt: { status: 'VORTEX', flip: 'Receber Sinal', countdown: 'Restante:', wait: 'AGUARDE...', accuracy: 'Precisão:' },
-        es: { status: 'VORTEX', flip: 'Recibir Señal', countdown: 'Restantes:', wait: 'ESPERE...', accuracy: 'Precisión:' },
-        tr: { status: 'VORTEX', flip: 'Sinyal Al', countdown: 'Kaldı:', wait: 'BEKLEYIN...', accuracy: 'Doğruluk:' }
+        ru: { status: 'VORTEX', flip: 'Получить Сигнал', countdown: 'Осталось:', wait: 'ЖДИТЕ...', accuracy: 'Точность Сигнала:', stars: 'ЗВЁЗД' },
+        en: { status: '3 TRAPS', flip: 'Get Signal', countdown: 'Remaining:', wait: 'HACKING...', accuracy: 'Signal Accuracy:', stars: 'STARS' },
+        hi: { status: 'VORTEX', flip: 'सिग्नल प्राप्त करें', countdown: 'सेकंड बचा:', wait: 'रुको...', accuracy: 'सटीकता:', stars: 'सितारे' },
+        pt: { status: 'VORTEX', flip: 'Receber Sinal', countdown: 'Restante:', wait: 'AGUARDE...', accuracy: 'Precisão:', stars: 'ESTRELAS' },
+        es: { status: 'VORTEX', flip: 'Recibir Señal', countdown: 'Restantes:', wait: 'ESPERE...', accuracy: 'Precisión:', stars: 'ESTRELLAS' },
+        tr: { status: 'VORTEX', flip: 'Sinyal Al', countdown: 'Kaldı:', wait: 'BEKLEYIN...', accuracy: 'Doğruluk:', stars: 'YILDIZ' }
     };
 
-    // Функция обновления языка интерфейса
     function updateLanguage(lang) {
-        console.log(`Updating language to ${lang}`); // Логирование
         const translation = translations[lang];
         if (translation) {
-            statusElement.innerText = translation.status;
             flipButton.innerText = translation.flip;
             countdownElement.innerText = `${translation.countdown} 0s`;
             accuracyElement.innerText = `${translation.accuracy} ${accuracy}%`;
-            // Обновляем статус для текущего состояния ожидания
             if (isCooldownActive) {
                 statusElement.innerText = translation.wait;
+            } else if (activeStars.length > 0) {
+                statusElement.innerText = `${activeStars.length} ${translation.stars}`;
+            } else {
+                statusElement.innerText = translation.status;
             }
         } else {
             console.error(`No translation found for language: ${lang}`);
         }
     }
 
-    // Открытие и закрытие выпадающего меню выбора языка
     function toggleDropdown() {
         if (isDropdownVisible) {
             languageDropdown.style.display = 'none';
@@ -53,37 +51,32 @@ document.addEventListener('DOMContentLoaded', () => {
         isDropdownVisible = !isDropdownVisible;
     }
 
-    // Обработка клика на иконку языка
     languageIcon.addEventListener('click', (event) => {
         event.stopPropagation();
         toggleDropdown();
     });
 
-    // Обработка выбора языка из меню
     languageOptions.forEach(option => {
         option.addEventListener('click', (event) => {
             event.preventDefault();
             const selectedLang = option.dataset.lang;
-            console.log(`Selected language: ${selectedLang}`); // Логирование выбранного языка
             if (translations[selectedLang]) {
-                languageIcon.src = option.src; // Меняем иконку языка
+                languageIcon.src = option.src;
                 currentLanguage = selectedLang;
                 updateLanguage(currentLanguage);
-                toggleDropdown(); // Закрываем меню после выбора
+                toggleDropdown();
             } else {
                 console.error(`No translation found for language: ${selectedLang}`);
             }
         });
     });
 
-    // Закрытие выпадающего меню при клике вне области
     document.addEventListener('click', (event) => {
         if (isDropdownVisible && !languageDropdown.contains(event.target) && event.target !== languageIcon) {
             toggleDropdown();
         }
     });
 
-    // Создание 5x5 игрового поля для Minesweeper
     const cells = [];
     for (let i = 0; i < 25; i++) {
         const cell = document.createElement('div');
@@ -92,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         gameField.appendChild(cell);
     }
 
-    // Функция для плавного уменьшения прогресс-бара и обратного отсчёта
     function updateCountdown() {
         const now = Date.now();
         const timeLeft = Math.max(0, cooldownEndTime - now);
@@ -100,13 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (timeLeft > 0) {
             const progress = 1 - timeLeft / 9000;
-            progressBar.style.width = `${(1 - progress) * 100}%`; // Плавное уменьшение
+            progressBar.style.width = `${(1 - progress) * 100}%`;
             countdownElement.innerText = `${translations[currentLanguage].countdown} ${secondsLeft}s`;
             flipButton.disabled = true;
             flipButton.classList.add('disabled');
             isCooldownActive = true;
         } else {
-            progressBar.style.width = '100%'; // Сбрасываем статус бар в исходное положение (100%)
+            progressBar.style.width = '0%';
             countdownElement.innerText = `${translations[currentLanguage].countdown} 0s`;
             flipButton.disabled = false;
             flipButton.classList.remove('disabled');
@@ -114,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Функция запуска таймера обратного отсчёта и прогресс-бара
     function startCountdown(seconds) {
         cooldownEndTime = Date.now() + seconds * 1000;
 
@@ -125,52 +116,98 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        countdownInterval(); // Старт обратного отсчёта
+        countdownInterval();
     }
 
-    // Сброс активных звёзд (очистка поля)
-    function resetStars() {
+    // Функция для сброса звёзд с анимацией
+    function resetStarsWithAnimation() {
+        const fadeOutDuration = 500;
+        const fadeInDuration = 500;
+
+        // Анимация исчезновения звёзд
         activeStars.forEach(cell => {
-            cell.classList.remove('star');
+
+            cell.classList.add('star-fade-out'); // Добавляем анимацию исчезновения
+
+            // После завершения анимации исчезновения (500 мс)
+            setTimeout(() => {
+                cell.classList.remove('star');
+                cell.classList.remove('star-fade-out');
+                cell.classList.add('fade-in'); // Анимация появления ячейки
+
+                // Сбрасываем анимационные классы после появления ячейки
+                setTimeout(() => {
+                    cell.classList.remove('fade-in', 'fade-out');
+                }, fadeInDuration);
+
+            }, fadeOutDuration);
         });
-        activeStars = []; // Очищаем массив звёзд
+        activeStars = [];
     }
 
-    // Показывание случайных звёзд на поле
+    // Анимация клеток
+    function animateCell(cell, callback) {
+        cell.classList.remove('fade-in', 'fade-out');
+        cell.classList.add('fade-out'); // Анимация исчезновения
+
+        // После исчезновения
+        setTimeout(() => {
+            cell.classList.remove('fade-out');
+            callback();
+            cell.classList.add('fade-in'); // Анимация появления
+        }, 500);
+    }
+
+    // Появление новых клеток
     function revealCells() {
-        const cellsToReveal = Math.floor(Math.random() * 3) + 5; // Показываем от 5 до 7 звёзд
+        const cellsToReveal = Math.floor(Math.random() * 3) + 5;
         const randomCells = cells.sort(() => 0.5 - Math.random()).slice(0, cellsToReveal);
 
-        let revealDelay = 0; // Задержка для каждой звезды
+        statusElement.innerText = `${cellsToReveal} ${translations[currentLanguage].stars}`;
+
+        let revealDelay = 0;
 
         randomCells.forEach((cell, index) => {
             setTimeout(() => {
-                cell.classList.add('star'); // Добавляем класс "star" для отображения звезды
-                activeStars.push(cell); // Сохраняем звезду как активную
-            }, revealDelay); // Показываем звезду с задержкой
+                animateCell(cell, () => {
+                    cell.classList.add('star');
+                    activeStars.push(cell);
+                });
+            }, revealDelay);
 
-            revealDelay += 750; // Увеличиваем задержку для следующей звезды
+            revealDelay += 750;
         });
 
-        startCountdown(9); // Запускаем обратный отсчёт с 9 секундами
+        startCountdown(9);
     }
 
-    // Обработчик клика на кнопку "Получить сигнал"
     flipButton.addEventListener('click', () => {
         if (isCooldownActive) return;
 
         flipButton.disabled = true;
         isCooldownActive = true;
-        statusElement.innerText = translations[currentLanguage].wait; // Обновляем статус
+        statusElement.innerText = translations[currentLanguage].wait;
 
-        // Задержка перед показом новых звёзд
+        // Сброс звёзд с анимацией
+        resetStarsWithAnimation();
+
         setTimeout(() => {
-            resetStars(); // Сброс старых звёзд
-            statusElement.innerText = translations[currentLanguage].status;
-            revealCells(); // Показываем новые звёзды
-        }, 1500); // Задержка в 1.5 секунды перед показом новых звёзд
+            revealCells();
+            accuracy = Math.floor(Math.random() * 21) + 80;
+            accuracyElement.innerText = `${translations[currentLanguage].accuracy} ${accuracy}%`;
+        }, 2000);
     });
 
-    // Инициализация языка интерфейса
     updateLanguage(currentLanguage);
+
+});
+
+document.getElementById('left-arrow').addEventListener('click', () => {
+    // Действие при нажатии на левую стрелку
+    console.log('Left arrow clicked');
+});
+
+document.getElementById('right-arrow').addEventListener('click', () => {
+    // Действие при нажатии на правую стрелку
+    console.log('Right arrow clicked');
 });

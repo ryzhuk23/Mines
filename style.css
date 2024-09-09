@@ -147,7 +147,7 @@ button#flip {
     height: 2.25rem;
 }
 
-button:disabled {
+button#flip:disabled {
     background-color: grey;
     cursor: not-allowed;
     box-shadow: 0 0px 6px grey;

@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLanguage = 'en';
     let isDropdownVisible = false;
     let isCooldownActive = false;
+    let isGetSignalActive = false; // Флаг, активен ли процесс после нажатия на "Get Signal"
     let accuracy = '92';
     let activeStars = [];
     let cooldownEndTime = null;
@@ -36,10 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
             flipButton.innerText = translation.flip;
             countdownElement.innerText = `${translation.countdown} 0s`;
             accuracyElement.innerText = `${translation.accuracy} ${accuracy}%`;
-            if (isCooldownActive) {
-                statusElement.innerText = translation.wait;
-            } else if (activeStars.length > 0) {
-                statusElement.innerText = `${activeStars.length} ${translation.stars}`;
+
+            if (isGetSignalActive) {
+                statusElement.innerText = `${translations[currentLanguage].stars}`;
             } else {
                 statusElement.innerText = trapLevels[currentTrapIndex];
             }
@@ -109,6 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
             flipButton.disabled = false;
             flipButton.classList.remove('disabled');
             isCooldownActive = false;
+            isGetSignalActive = false; // После окончания обратного отсчета разрешаем переключение уровней
+            updateLanguage(currentLanguage); // Обновляем статус при активации кнопки
         }
     }
 
@@ -198,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         flipButton.disabled = true;
         isCooldownActive = true;
+        isGetSignalActive = true;
         statusElement.innerText = translations[currentLanguage].wait;
 
         resetStarsWithAnimation();
@@ -206,33 +209,22 @@ document.addEventListener('DOMContentLoaded', () => {
             revealCells();
             accuracy = Math.floor(Math.random() * 21) + 80;
             accuracyElement.innerText = `${translations[currentLanguage].accuracy} ${accuracy}%`;
-
-            // Обновляем статус на текущее количество ловушек
-            statusElement.innerText = trapLevels[currentTrapIndex];
-
-            // Разблокируем кнопку "Get Signal" после завершения
-            flipButton.disabled = false;
-            isCooldownActive = false;
         }, 1500);
     });
 
     leftArrowButton.addEventListener('click', () => {
-        if (!isCooldownActive) {
-            if (currentTrapIndex > 0) {
-                currentTrapIndex--;
-                updateLanguage(currentLanguage);
-            }
+        if (!isCooldownActive && !isGetSignalActive && currentTrapIndex > 0) {
+            currentTrapIndex--;
+            updateLanguage(currentLanguage);
         }
     });
 
     rightArrowButton.addEventListener('click', () => {
-        if (!isCooldownActive) {
-            if (currentTrapIndex < trapLevels.length - 1) {
-                currentTrapIndex++;
-                updateLanguage(currentLanguage);
-            }
+        if (!isCooldownActive && !isGetSignalActive && currentTrapIndex < trapLevels.length - 1) {
+            currentTrapIndex++;
+            updateLanguage(currentLanguage);
         }
     });
 
-    updateLanguage(currentLanguage);
+    updateLanguage(currentLanguage); // Обновляем язык в начале
 });

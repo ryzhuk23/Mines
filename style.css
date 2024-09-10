@@ -42,7 +42,7 @@ body {
     display: flex; /* Центрируем текст по горизонтали и вертикали */
     align-items: center; /* Центрируем текст по вертикали */
     justify-content: center; /* Центрируем текст по горизонтали */
-    font-size: 40px; /* Устанавливаем размер шрифта */
+    font-size: 38px; /* Устанавливаем размер шрифта */
     font-weight: bold; /* Устанавливаем жирность шрифта */
     z-index: -2;
 }
@@ -57,13 +57,13 @@ body {
 }
 
 #game-field {
-    width: 17rem;
-    height: 17rem;
-    padding: 0.7285rem; /* Отступы по краям внутри игрового поля */
+    width: 280px;
+    height: 280px;
+    padding: 12px; /* Отступы по краям внутри игрового поля */
     display: grid;
     grid-template-columns: repeat(5, 1fr); /* 5 колонок одинаковой ширины */
     grid-template-rows: repeat(5, 1fr);    /* 5 строк одинаковой высоты */
-    gap: 0.3886rem; /* Расстояние между клетками */
+    gap: 6.4px; /* Расстояние между клетками */
     background-image: url('images/field.png');
     background-size: cover;
     box-sizing: border-box; /* Включаем padding в общие размеры блока */
@@ -71,17 +71,17 @@ body {
 
 /* Стили для ячеек */
 .cell {
-    width: 2.82rem;
-    height: 2.82rem;
+    width: 46.46px;
+    height: 46.46px;
     background-size: cover;
 }
 
 .cell-odd {
-    background-image: url('images/cell_1.png');
+    background-image: url('images/cell_2.png');
 }
 
 .cell-even {
-    background-image: url('images/cell_2.png');
+    background-image: url('images/cell_1.png');
 }
 
 .star {
@@ -134,19 +134,6 @@ button#flip {
     cursor: pointer;
 }
 
-#left-arrow {
-    margin-right: 0.375rem; /* Отступ справа для левой стрелки */
-}
-
-#right-arrow {
-    margin-left: 0.375rem; /* Отступ слева для правой стрелки */
-}
-
-.arrow-button img {
-    width: 2.25rem;
-    height: 2.25rem;
-}
-
 button#flip:disabled {
     background-color: grey;
     cursor: not-allowed;
@@ -154,9 +141,23 @@ button#flip:disabled {
     z-index: 0;
 }
 
+#left-arrow, #right-arrow {
+    margin: 0 0.375rem;
+}
+
 .arrow-button img {
     width: 2.25rem;
     height: 2.25rem;
+}
+
+.arrow-button img {
+    width: 2.25rem;
+    height: 2.25rem;
+}
+
+.disabled-arrow {
+    opacity: 0.5;
+    pointer-events: none; /* Отключаем возможность клика */
 }
 
 .pulse-once {
@@ -292,7 +293,7 @@ button#flip:disabled {
 
 /* Анимация исчезновения ячейки */
 .fade-out {
-    animation: fadeOut 0.5s forwards;
+    animation: fadeOut 0.6s forwards;
 }
 
 @keyframes fadeOut {
@@ -308,7 +309,7 @@ button#flip:disabled {
 
 /* Анимация появления звезды */
 .fade-in {
-    animation: fadeIn 0.3s forwards;
+    animation: fadeIn 0.6s forwards;
 }
 
 @keyframes fadeIn {
@@ -323,7 +324,7 @@ button#flip:disabled {
 }
 
 .star-fade-out {
-    animation: starFadeOut 0.5s forwards;
+    animation: starFadeOut 0.6s forwards;
 }
 
 @keyframes starFadeOut {

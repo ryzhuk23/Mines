@@ -19,17 +19,36 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeStars = [];
     let cooldownEndTime = null;
     let currentTrapIndex = 1; // Начальный индекс для "3 TRAPS"
+    let currentStarsCount = 0; // Переменная для хранения количества звёзд
 
     const trapLevels = ["1 TRAP", "3 TRAPS", "5 TRAPS", "7 TRAPS"]; // Уровни ловушек
 
     const translations = {
-        ru: { status: '3 ЛОВУШКИ', flip: 'Получить Сигнал', countdown: 'Осталось:', wait: 'ЖДИТЕ...', accuracy: 'Точность Сигнала:', stars: 'ЗВЁЗД' },
-        en: { status: '3 TRAPS', flip: 'Get Signal', countdown: 'Remaining:', wait: 'HACKING...', accuracy: 'Signal Accuracy:', stars: 'STARS' },
-        hi: { status: '3 TRAPS', flip: 'सिग्नल प्राप्त करें', countdown: 'सेकंड बचा:', wait: 'रुको...', accuracy: 'सटीकता:', stars: 'सितारे' },
-        pt: { status: '3 TRAPS', flip: 'Receber Sinal', countdown: 'Restante:', wait: 'AGUARDE...', accuracy: 'Precisão:', stars: 'ESTRELAS' },
-        es: { status: '3 TRAPS', flip: 'Recibir Señal', countdown: 'Restantes:', wait: 'ESPERE...', accuracy: 'Precisión:', stars: 'ESTRELLAS' },
-        tr: { status: '3 TRAPS', flip: 'Sinyal Al', countdown: 'Kaldı:', wait: 'BEKLEYIN...', accuracy: 'Doğruluk:', stars: 'YILDIZ' }
+        ru: { flip: 'Получить Сигнал', countdown: 'Осталось:', wait: 'ВЗЛОМ...', accuracy: 'Точность Сигнала:', stars: 'ЗВЁЗД', traps: ["1 ЛОВУШКА", "3 ЛОВУШКИ", "5 ЛОВУШЕК", "7 ЛОВУШЕК"] },
+        en: { flip: 'Get Signal', countdown: 'Remaining:', wait: 'HACKING...', accuracy: 'Signal Accuracy:', stars: 'STARS', traps: ["1 TRAP", "3 TRAPS", "5 TRAPS", "7 TRAPS"] },
+        hi: { flip: 'सिग्नल प्राप्त करें', countdown: 'सेकंड बचा:', wait: 'रुको...', accuracy: 'सटीकता:', stars: 'सितारे', traps: ["1 ट्रैप", "3 ट्रैप", "5 ट्रैप", "7 ट्रैप"] },
+        pt: { flip: 'Receber Sinal', countdown: 'Restante:', wait: 'AGUARDE...', accuracy: 'Precisão:', stars: 'ESTRELAS', traps: ["1 ARMADILHA", "3 ARMADILHAS", "5 ARMADILHAS", "7 ARMADILHAS"] },
+        es: { flip: 'Recibir Señal', countdown: 'Restantes:', wait: 'ESPERE...', accuracy: 'Precisión:', stars: 'ESTRELLAS', traps: ["1 TRAMPA", "3 TRAMPAS", "5 TRAMPAS", "7 TRAMPAS"] },
+        tr: { flip: 'Sinyal Al', countdown: 'Kaldı:', wait: 'BEKLEYIN...', accuracy: 'Doğruluk:', stars: 'YILDIZ', traps: ["1 TUZAĞI", "3 TUZAĞI", "5 TUZAĞI", "7 TUZAĞI"] }
     };
+
+    function getStarsText(count) {
+        const lang = currentLanguage;
+        if (lang === 'ru') {
+            if (count % 10 === 1 && count % 100 !== 11) return 'ЗВЕЗДА';
+            if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return 'ЗВЕЗДЫ';
+            return 'ЗВЁЗД';
+        }
+        return translations[lang].stars;
+    }
+
+    function updateStatus() {
+        if (isGetSignalActive) {
+            statusElement.innerText = `${currentStarsCount} ${getStarsText(currentStarsCount)}`;
+        } else {
+            statusElement.innerText = translations[currentLanguage].traps[currentTrapIndex];
+        }
+    }
 
     function updateLanguage(lang) {
         const translation = translations[lang];
@@ -39,9 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
             accuracyElement.innerText = `${translation.accuracy} ${accuracy}%`;
 
             if (isGetSignalActive) {
-                statusElement.innerText = `${translations[currentLanguage].stars}`;
+                statusElement.innerText = translation.wait; // Показываем "HACKING..." на выбранном языке
+            } else if (isCooldownActive) {
+                statusElement.innerText = `${currentStarsCount} ${getStarsText(currentStarsCount)}`;
             } else {
-                statusElement.innerText = trapLevels[currentTrapIndex];
+                updateStatus(); // Обновляем статус для ловушек, если взлом не активен
             }
         } else {
             console.error(`No translation found for language: ${lang}`);
@@ -49,11 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleDropdown() {
-        if (isDropdownVisible) {
-            languageDropdown.style.display = 'none';
-        } else {
-            languageDropdown.style.display = 'grid';
-        }
+        languageDropdown.style.display = isDropdownVisible ? 'none' : 'grid';
         isDropdownVisible = !isDropdownVisible;
     }
 
@@ -83,13 +100,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const cells = [];
-    for (let i = 0; i < 25; i++) {
+    const cells = Array.from({ length: 25 }, (_, i) => {
         const cell = document.createElement('div');
         cell.classList.add('cell', i % 2 === 0 ? 'cell-even' : 'cell-odd');
-        cells.push(cell);
         gameField.appendChild(cell);
-    }
+        return cell;
+    });
 
     function updateCountdown() {
         const now = Date.now();
@@ -109,8 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
             flipButton.disabled = false;
             flipButton.classList.remove('disabled');
             isCooldownActive = false;
-            isGetSignalActive = false; // После окончания обратного отсчета разрешаем переключение уровней
-            updateLanguage(currentLanguage); // Обновляем статус при активации кнопки
+            if (!isGetSignalActive) { // Обновляем статус, только если взлом не активен
+                updateStatus();
+            }
         }
     }
 
@@ -134,8 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeStars.forEach(cell => {
             cell.classList.add('star-fade-out');
             setTimeout(() => {
-                cell.classList.remove('star');
-                cell.classList.remove('star-fade-out');
+                cell.classList.remove('star', 'star-fade-out');
                 cell.classList.add('fade-in');
                 setTimeout(() => {
                     cell.classList.remove('fade-in', 'fade-out');
@@ -156,13 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function revealCells() {
-        const starsToReveal = getRandomStarsForTrapLevel();
-        const randomCells = cells.sort(() => 0.5 - Math.random()).slice(0, starsToReveal);
+        currentStarsCount = getRandomStarsForTrapLevel(); // Обновляем количество звёзд
+        const randomCells = cells.sort(() => 0.5 - Math.random()).slice(0, currentStarsCount);
 
-        statusElement.innerText = `${starsToReveal} ${translations[currentLanguage].stars}`;
+        updateStatus(); // Обновляем статус перед началом отображения звёзд
 
         let revealDelay = 0;
-        randomCells.forEach((cell, index) => {
+        randomCells.forEach((cell) => {
             setTimeout(() => {
                 animateCell(cell, () => {
                     cell.classList.add('star');
@@ -177,22 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRandomStarsForTrapLevel() {
-        let starsCount = 0;
         switch (trapLevels[currentTrapIndex]) {
-            case "1 TRAP":
-                starsCount = Math.floor(Math.random() * 3) + 5; // от 5 до 7 звёзд
-                break;
-            case "3 TRAPS":
-                starsCount = Math.floor(Math.random() * 3) + 4; // от 4 до 6 звёзд
-                break;
-            case "5 TRAPS":
-                starsCount = Math.floor(Math.random() * 3) + 3; // от 3 до 5 звёзд
-                break;
-            case "7 TRAPS":
-                starsCount = Math.floor(Math.random() * 3) + 2; // от 2 до 4 звёзд
-                break;
+            case "1 TRAP": return Math.floor(Math.random() * 3) + 5; // от 5 до 7 звёзд
+            case "3 TRAPS": return Math.floor(Math.random() * 3) + 4; // от 4 до 6 звёзд
+            case "5 TRAPS": return Math.floor(Math.random() * 3) + 3; // от 3 до 5 звёзд
+            case "7 TRAPS": return Math.floor(Math.random() * 3) + 2; // от 2 до 4 звёзд
         }
-        return starsCount;
     }
 
     flipButton.addEventListener('click', () => {
@@ -209,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             revealCells();
             accuracy = Math.floor(Math.random() * 21) + 80;
             accuracyElement.innerText = `${translations[currentLanguage].accuracy} ${accuracy}%`;
+            isGetSignalActive = false; // Завершаем процесс "Get Signal"
         }, 1500);
     });
 

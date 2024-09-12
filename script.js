@@ -15,21 +15,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDropdownVisible = false;
     let isCooldownActive = false;
     let isGetSignalActive = false; // Флаг, активен ли процесс после нажатия на "Get Signal"
-    let accuracy = '92';
+    let accuracy = '+85';
     let activeStars = [];
     let cooldownEndTime = null;
-    let currentTrapIndex = 1; // Начальный индекс для "3 TRAPS"
+    let currentTrapIndex = 1; // Начальный индекс для "3 BOMBS"
     let currentStarsCount = 0; // Переменная для хранения количества звёзд
 
-    const trapLevels = ["1 TRAP", "3 TRAPS", "5 TRAPS", "7 TRAPS"]; // Уровни ловушек
+    const trapLevels = ["1 BOMB", "3 BOMBS", "5 BOMBS", "7 BOMBS"]; // Уровни ловушек
 
     const translations = {
-        ru: { flip: 'Получить Сигнал', countdown: 'Осталось:', wait: 'ВЗЛОМ...', accuracy: 'Точность Сигнала:', stars: 'ЗВЁЗД', traps: ["1 ЛОВУШКА", "3 ЛОВУШКИ", "5 ЛОВУШЕК", "7 ЛОВУШЕК"] },
-        en: { flip: 'Get Signal', countdown: 'Remaining:', wait: 'HACKING...', accuracy: 'Signal Accuracy:', stars: 'STARS', traps: ["1 TRAP", "3 TRAPS", "5 TRAPS", "7 TRAPS"] },
-        hi: { flip: 'सिग्नल प्राप्त करें', countdown: 'सेकंड बचा:', wait: 'रुको...', accuracy: 'सटीकता:', stars: 'सितारे', traps: ["1 ट्रैप", "3 ट्रैप", "5 ट्रैप", "7 ट्रैप"] },
-        pt: { flip: 'Receber Sinal', countdown: 'Restante:', wait: 'AGUARDE...', accuracy: 'Precisão:', stars: 'ESTRELAS', traps: ["1 ARMADILHA", "3 ARMADILHAS", "5 ARMADILHAS", "7 ARMADILHAS"] },
-        es: { flip: 'Recibir Señal', countdown: 'Restantes:', wait: 'ESPERE...', accuracy: 'Precisión:', stars: 'ESTRELLAS', traps: ["1 TRAMPA", "3 TRAMPAS", "5 TRAMPAS", "7 TRAMPAS"] },
-        tr: { flip: 'Sinyal Al', countdown: 'Kaldı:', wait: 'BEKLEYIN...', accuracy: 'Doğruluk:', stars: 'YILDIZ', traps: ["1 TUZAĞI", "3 TUZAĞI", "5 TUZAĞI", "7 TUZAĞI"] }
+        ru: { flip: 'Получить Сигнал', countdown: 'Осталось:', sec: 'сек', wait: 'ВЗЛОМ...', accuracy: 'Точность Сигнала:', stars: 'ЗВЁЗД', traps: ["1 БОМБА", "3 БОМБЫ", "5 БОМБ", "7 БОМБ"] },
+        en: { flip: 'Get Signal', countdown: 'Remaining:', sec: 'sec', wait: 'HACKING...', accuracy: 'Signal Accuracy:', stars: 'STARS', traps: ["1 BOMB", "3 BOMBS", "5 BOMBS", "7 BOMBS"] },
+        hi: { flip: 'सिग्नल प्राप्त करें', countdown: 'वाम:', sec: 'सेक', wait: 'रुको...', accuracy: 'सिग्नल सटीकता:', stars: 'सितारे', traps: ["1 बम", "3 बम", "5 बम", "7 बम"] },
+        pt: { flip: 'Receber Sinal', countdown: 'Restante:', sec: 'seg', wait: 'AGUARDE...', accuracy: 'Precisão Do Sinal:', stars: 'ESTRELAS', traps: ["1 BOMBA", "3 BOMBAS", "5 BOMBAS", "7 BOMBAS"] },
+        es: { flip: 'Recibir Señal', countdown: 'Restantes:', sec: 'seg', wait: 'ESPERE...', accuracy: 'Precisión De La Señal:', stars: 'ESTRELLAS', traps: ["1 BOMBA", "3 BOMBAS", "5 BOMBAS", "7 BOMBAS"] },
+        tr: { flip: 'Sinyal Al', countdown: 'Kaldı:', sec: 'sn', wait: 'BEKLEYIN...', accuracy: 'Sinyal Doğruluğu:', stars: 'YILDIZ', traps: ["1 BOMBA", "3 BOMBA", "5 BOMBA", "7 BOMBA"] }
     };
 
     function getStarsText(count) {
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const translation = translations[lang];
         if (translation) {
             flipButton.innerText = translation.flip;
-            countdownElement.innerText = `${translation.countdown} 0s`;
+            countdownElement.innerText = `${translation.countdown} 0 ${translation.sec}`;
             accuracyElement.innerText = `${translation.accuracy} ${accuracy}%`;
 
             if (isGetSignalActive) {
@@ -113,15 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const secondsLeft = Math.ceil(timeLeft / 1000);
 
         if (timeLeft > 0) {
-            const progress = 1 - timeLeft / 9000;
+            const progress = 1 - timeLeft / 30000;
             progressBar.style.width = `${(1 - progress) * 100}%`;
-            countdownElement.innerText = `${translations[currentLanguage].countdown} ${secondsLeft}s`;
+            countdownElement.innerText = `${translations[currentLanguage].countdown} ${secondsLeft} ${translations[currentLanguage].sec}`;
             flipButton.disabled = true;
             flipButton.classList.add('disabled');
             isCooldownActive = true;
         } else {
             progressBar.style.width = '0%';
-            countdownElement.innerText = `${translations[currentLanguage].countdown} 0s`;
+            countdownElement.innerText = `${translations[currentLanguage].countdown} 0 ${translations[currentLanguage].sec}`;
             flipButton.disabled = false;
             flipButton.classList.remove('disabled');
             isCooldownActive = false;
@@ -189,15 +189,15 @@ document.addEventListener('DOMContentLoaded', () => {
             revealDelay += 750;
         });
 
-        startCountdown(9);
+        startCountdown(30);
     }
 
     function getRandomStarsForTrapLevel() {
         switch (trapLevels[currentTrapIndex]) {
-            case "1 TRAP": return Math.floor(Math.random() * 3) + 5; // от 5 до 7 звёзд
-            case "3 TRAPS": return Math.floor(Math.random() * 3) + 4; // от 4 до 6 звёзд
-            case "5 TRAPS": return Math.floor(Math.random() * 3) + 3; // от 3 до 5 звёзд
-            case "7 TRAPS": return Math.floor(Math.random() * 3) + 2; // от 2 до 4 звёзд
+            case "1 BOMB": return Math.floor(Math.random() * 3) + 5; // от 5 до 7 звёзд
+            case "3 BOMBS": return Math.floor(Math.random() * 3) + 4; // от 4 до 6 звёзд
+            case "5 BOMBS": return Math.floor(Math.random() * 3) + 3; // от 3 до 5 звёзд
+            case "7 BOMBS": return Math.floor(Math.random() * 3) + 2; // от 2 до 4 звёзд
         }
     }
 
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setTimeout(() => {
             revealCells();
-            accuracy = Math.floor(Math.random() * 21) + 80;
+            accuracy = Math.floor(Math.random() * 14) + 86;
             accuracyElement.innerText = `${translations[currentLanguage].accuracy} ${accuracy}%`;
             isGetSignalActive = false; // Завершаем процесс "Get Signal"
         }, 1500);

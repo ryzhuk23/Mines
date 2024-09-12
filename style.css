@@ -31,7 +31,7 @@ body {
 
 .container {
     display: flex;
-    margin-top: 2.5rem;
+    margin-top: 2.4rem;
     flex-direction: column;
     align-items: center; /* Центрируем все элементы по горизонтали */
 }
@@ -42,7 +42,7 @@ body {
     display: flex; /* Центрируем текст по горизонтали и вертикали */
     align-items: center; /* Центрируем текст по вертикали */
     justify-content: center; /* Центрируем текст по горизонтали */
-    font-size: 38px; /* Устанавливаем размер шрифта */
+    font-size: 40px; /* Устанавливаем размер шрифта */
     font-weight: bold; /* Устанавливаем жирность шрифта */
     z-index: -2;
 }
@@ -50,7 +50,7 @@ body {
 #signal-accuracy {
     color: #9D9FA5;
     font-size: 14px;
-    margin-top: -0.5rem;
+    margin-top: -0.4rem;
     margin-bottom: 0.9rem;
     font-family: "Microsoft Sans Serif", Arial, sans-serif;
     z-index: 0;
@@ -59,11 +59,11 @@ body {
 #game-field {
     width: 280px;
     height: 280px;
-    padding: 12px; /* Отступы по краям внутри игрового поля */
+    padding: 10.5px 12px; /* Отступы по краям внутри игрового поля */
     display: grid;
     grid-template-columns: repeat(5, 1fr); /* 5 колонок одинаковой ширины */
     grid-template-rows: repeat(5, 1fr);    /* 5 строк одинаковой высоты */
-    gap: 6.4px; /* Расстояние между клетками */
+    gap: 6.5px; /* Расстояние между клетками */
     background-image: url('images/field.png');
     background-size: cover;
     box-sizing: border-box; /* Включаем padding в общие размеры блока */
@@ -71,8 +71,8 @@ body {
 
 /* Стили для ячеек */
 .cell {
-    width: 46.46px;
-    height: 46.46px;
+    width: 46.4px;
+    height: 46.4px;
     background-size: cover;
 }
 
@@ -90,7 +90,7 @@ body {
 
 #gradient-background {
     position: absolute;
-    top: 50%;
+    top: 22.5rem;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 70rem; /* ширина в rem */
@@ -269,7 +269,7 @@ button#flip:disabled {
 }
 
 #progress-bar-container {
-    width: 40%;
+    width: 36%;
     height: 5px;
     background-color: #ddd;
     margin-top: 1rem;

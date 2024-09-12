@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const secondsLeft = Math.ceil(timeLeft / 1000);
 
         if (timeLeft > 0) {
-            const progress = 1 - timeLeft / 30000;
+            const progress = 1 - timeLeft / 15000;
             progressBar.style.width = `${(1 - progress) * 100}%`;
             countdownElement.innerText = `${translations[currentLanguage].countdown} ${secondsLeft} ${translations[currentLanguage].sec}`;
             flipButton.disabled = true;
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
             revealDelay += 750;
         });
 
-        startCountdown(30);
+        startCountdown(15);
     }
 
     function getRandomStarsForTrapLevel() {

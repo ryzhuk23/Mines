@@ -194,8 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getRandomStarsForTrapLevel() {
         switch (trapLevels[currentTrapIndex]) {
-            case "1 BOMB": return Math.floor(Math.random() * 3) + 5; // от 5 до 7 звёзд
-            case "3 BOMBS": return Math.floor(Math.random() * 3) + 4; // от 4 до 6 звёзд
+            case "1 BOMB": return Math.floor(Math.random() * 3) + 6; // от 6 до 8 звёзд
+            case "3 BOMBS": return Math.floor(Math.random() * 3) + 5; // от 5 до 7 звёзд
             case "5 BOMBS": return Math.floor(Math.random() * 3) + 3; // от 3 до 5 звёзд
             case "7 BOMBS": return Math.floor(Math.random() * 3) + 2; // от 2 до 4 звёзд
         }

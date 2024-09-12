@@ -57,13 +57,13 @@ body {
 }
 
 #game-field {
-    width: 280px;
-    height: 280px;
-    padding: 10.5px 12px; /* Отступы по краям внутри игрового поля */
+    width: 336px;
+    height: 336px;
+    padding: 12.6px 14.4px; /* Отступы по краям внутри игрового поля */
     display: grid;
     grid-template-columns: repeat(5, 1fr); /* 5 колонок одинаковой ширины */
     grid-template-rows: repeat(5, 1fr);    /* 5 строк одинаковой высоты */
-    gap: 6.5px; /* Расстояние между клетками */
+    gap: 7.8px; /* Расстояние между клетками */
     background-image: url('images/field.png');
     background-size: cover;
     box-sizing: border-box; /* Включаем padding в общие размеры блока */
@@ -71,8 +71,8 @@ body {
 
 /* Стили для ячеек */
 .cell {
-    width: 46.4px;
-    height: 46.4px;
+    width: 55.75px;
+    height: 55.75px;
     background-size: cover;
 }
 

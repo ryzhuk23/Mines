@@ -32,6 +32,23 @@ document.addEventListener('DOMContentLoaded', () => {
         tr: { flip: 'Sinyal Al', countdown: 'Kaldı:', sec: 'sn', wait: 'BEKLEYIN...', accuracy: 'Sinyal Doğruluğu:', stars: 'YILDIZ', traps: ["1 BOMBA", "3 BOMBA", "5 BOMBA", "7 BOMBA"] }
     };
 
+    // Функция для предзагрузки изображений
+    function preloadImages(urls) {
+        urls.forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
+    }
+
+    // Вызываем предзагрузку изображений при загрузке страницы
+    preloadImages([
+        'images/cell_1.png',
+        'images/cell_2.png',
+        'images/star.png',
+        'images/left_arrow.png',
+        'images/right_arrow.png'
+    ]);
+
     function getStarsText(count) {
         const lang = currentLanguage;
         if (lang === 'ru') {
